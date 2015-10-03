@@ -1,6 +1,6 @@
 <?php
 /**
- * Log/Logger.php
+ * Log/FileLogger.php
  *
  * @author Jérémy 'Jejem' Desvages <jejem@phyrexia.org>
  * @copyright Jérémy 'Jejem' Desvages
@@ -10,10 +10,9 @@
 
 namespace Phyrexia\Log;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
+use Psr\Log\AbstractLogger;
 
-class Logger implements LoggerInterface {
+class FileLogger extends AbstractLogger {
 	private $filepath;
 
 	public function __construct($filepath = NULL) {
@@ -54,37 +53,5 @@ class Logger implements LoggerInterface {
 		file_put_contents($this->getFilePath(), $buf.PHP_EOL, FILE_APPEND);
 
 		return true;
-	}
-
-	public function emergency($message, array $context = array()) {
-		$this->log(LogLevel::EMERGENCY, $message, $context);
-	}
-
-	public function alert($message, array $context = array()) {
-		$this->log(LogLevel::ALERT, $message, $context);
-	}
-
-	public function critical($message, array $context = array()) {
-		$this->log(LogLevel::CRITICAL, $message, $context);
-	}
-
-	public function error($message, array $context = array()) {
-		$this->log(LogLevel::ERROR, $message, $context);
-	}
-
-	public function warning($message, array $context = array()) {
-		$this->log(LogLevel::WARNING, $message, $context);
-	}
-
-	public function notice($message, array $context = array()) {
-		$this->log(LogLevel::NOTICE, $message, $context);
-	}
-
-	public function info($message, array $context = array()) {
-		$this->log(LogLevel::INFO, $message, $context);
-	}
-
-	public function debug($message, array $context = array()) {
-		$this->log(LogLevel::DEBUG, $message, $context);
 	}
 }
