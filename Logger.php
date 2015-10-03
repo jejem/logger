@@ -10,70 +10,81 @@
 
 namespace Phyrexia\Log;
 
-class Logger {
-	protected static $path = NULL;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
-	public static function setPath($path) {
-		if (! is_string($path))
+class Logger implements LoggerInterface {
+	private $filepath;
+
+	public function __construct($filepath = NULL) {
+		if (! is_null($filepath))
+			$this->setFilePath($filepath);
+	}
+
+	public function getFilePath() {
+		return $this->filepath;
+	}
+
+	public function setFilePath($filepath) {
+		if (! is_string($filepath))
 			return false;
 
-		self::$path = realpath($path);
+		if (! file_exists(dirname($filepath)) || (! is_writable($filepath) && ! is_writable(dirname($filepath))))
+			return false;
+
+		$this->filepath = $filepath;
 
 		return true;
 	}
 
-	public static function log($loglevel, $filename, $message, $file=NULL, $line=NULL) {
-		if (is_null(self::$path))
+	public function log($level, $message, array $context = array()) {
+		if (is_null($this->getFilePath()))
 			return false;
 
 		$buf = '';
-		$buf.= date('M j Y H:i:s');
-		if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] != '')
-			$buf.= ' - '.$_SERVER['REMOTE_ADDR'];
+		$buf.= date('r');
+		$buf.= ' - ';
+		if (isset($_SERVER) && is_array($_SERVER) && array_key_exists('REMOTE_ADDR', $_SERVER))
+			$buf.= $_SERVER['REMOTE_ADDR'];
 		else
-			$buf.= ' - 127.0.0.1';
-		$buf.= ' - '.strtoupper($loglevel);
+			$buf.= '~';
+		$buf.= ' - '.strtoupper($level);
 		$buf.= ' - '.$message;
-		if (! is_null($file)) {
-			$buf.= ' in '.$file;
-			if (! is_null($line))
-				$buf.= ' at line '.$line;
-		}
 
-		file_put_contents(self::$path.'/'.$filename.'.log', $buf."\r\n", FILE_APPEND);
+		file_put_contents($this->getFilePath(), $buf.PHP_EOL, FILE_APPEND);
 
 		return true;
 	}
 
-	public static function emergency($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::EMERGENCY, $filename, $message, $file, $line);
+	public function emergency($message, array $context = array()) {
+		$this->log(LogLevel::EMERGENCY, $message, $context);
 	}
 
-	public static function alert($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::ALERT, $filename, $message, $file, $line);
+	public function alert($message, array $context = array()) {
+		$this->log(LogLevel::ALERT, $message, $context);
 	}
 
-	public static function critical($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::CRITICAL, $filename, $message, $file, $line);
+	public function critical($message, array $context = array()) {
+		$this->log(LogLevel::CRITICAL, $message, $context);
 	}
 
-	public static function error($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::ERROR, $filename, $message, $file, $line);
+	public function error($message, array $context = array()) {
+		$this->log(LogLevel::ERROR, $message, $context);
 	}
 
-	public static function warning($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::WARNING, $filename, $message, $file, $line);
+	public function warning($message, array $context = array()) {
+		$this->log(LogLevel::WARNING, $message, $context);
 	}
 
-	public static function notice($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::NOTICE, $filename, $message, $file, $line);
+	public function notice($message, array $context = array()) {
+		$this->log(LogLevel::NOTICE, $message, $context);
 	}
 
-	public static function info($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::INFO, $filename, $message, $file, $line);
+	public function info($message, array $context = array()) {
+		$this->log(LogLevel::INFO, $message, $context);
 	}
 
-	public static function debug($filename, $message, $file=NULL, $line=NULL) {
-		Logger::log(LogLevel::DEBUG, $filename, $message, $file, $line);
+	public function debug($message, array $context = array()) {
+		$this->log(LogLevel::DEBUG, $message, $context);
 	}
 }
