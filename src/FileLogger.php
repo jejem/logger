@@ -10,14 +10,11 @@
 
 namespace Phyrexia\Log;
 
-use Psr\Log\AbstractLogger;
-
-class FileLogger extends AbstractLogger {
+class FileLogger extends \Psr\Log\AbstractLogger {
 	private $filePath;
 
 	public function __construct($filePath = NULL) {
-		if (! is_null($filePath))
-			$this->setFilePath($filePath);
+		$this->setFilePath($filePath);
 	}
 
 	public function getFilePath() {
@@ -37,7 +34,10 @@ class FileLogger extends AbstractLogger {
 	}
 
 	public function log($level, $message, array $context = array()) {
-		if (is_null($this->filePath))
+		if (! in_array($level, array(\Psr\Log\LogLevel::EMERGENCY, \Psr\Log\LogLevel::ALERT, \Psr\Log\LogLevel::CRITICAL, \Psr\Log\LogLevel::ERROR, \Psr\Log\LogLevel::WARNING, \Psr\Log\LogLevel::NOTICE, \Psr\Log\LogLevel::INFO, \Psr\Log\LogLevel::DEBUG)))
+			throw new \Psr\Log\InvalidArgumentException('Invalid or unsupported log level '.$level);
+
+		if (is_null($this->getFilePath()))
 			return false;
 
 		$buf = '';
@@ -48,10 +48,18 @@ class FileLogger extends AbstractLogger {
 		else
 			$buf.= '~';
 		$buf.= ' - '.strtoupper($level);
-		$buf.= ' - '.$message;
+		$buf.= ' - '.$this->interpolate((string)$message, $context);
 
-		file_put_contents($this->filePath, $buf.PHP_EOL, FILE_APPEND);
+		file_put_contents($this->getFilePath(), $buf.PHP_EOL, FILE_APPEND);
 
 		return true;
+	}
+
+	private function interpolate($message, array $context = array()) {
+		$replace = array();
+		foreach ($context as $k => $v)
+			$replace['{'.$k.'}'] = $v;
+
+		return strtr((string)$message, $replace);
 	}
 }
