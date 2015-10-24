@@ -34,7 +34,16 @@ class FileLogger extends \Psr\Log\AbstractLogger {
 	}
 
 	public function log($level, $message, array $context = array()) {
-		if (! in_array($level, array(\Psr\Log\LogLevel::EMERGENCY, \Psr\Log\LogLevel::ALERT, \Psr\Log\LogLevel::CRITICAL, \Psr\Log\LogLevel::ERROR, \Psr\Log\LogLevel::WARNING, \Psr\Log\LogLevel::NOTICE, \Psr\Log\LogLevel::INFO, \Psr\Log\LogLevel::DEBUG)))
+		if (! in_array($level, array(
+			\Psr\Log\LogLevel::EMERGENCY,
+			\Psr\Log\LogLevel::ALERT,
+			\Psr\Log\LogLevel::CRITICAL,
+			\Psr\Log\LogLevel::ERROR,
+			\Psr\Log\LogLevel::WARNING,
+			\Psr\Log\LogLevel::NOTICE,
+			\Psr\Log\LogLevel::INFO,
+			\Psr\Log\LogLevel::DEBUG
+		)))
 			throw new \Psr\Log\InvalidArgumentException('Invalid or unsupported log level '.$level);
 
 		if (is_null($this->getFilePath()))
