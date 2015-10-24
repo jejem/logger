@@ -1,7 +1,7 @@
 {
 	"name": "phyrexia/log",
 	"type": "library",
-	"description": "PHP class to write logs easily",
+	"description": "PHP PSR-3 compatible loggers",
 	"keywords": ["log", "logger", "loglevel"],
 	"authors": [{"name": "Jérémy 'Jejem' Desvages", "email": "jejem@phyrexia.org"}],
 	"license": "MIT",
