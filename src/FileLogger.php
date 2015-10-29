@@ -56,6 +56,7 @@ class FileLogger extends \Psr\Log\AbstractLogger {
 			$buf.= $_SERVER['REMOTE_ADDR'];
 		else
 			$buf.= '~';
+		$buf.= ' - '.php_uname('n');
 		$buf.= ' - '.strtoupper($level);
 		$buf.= ' - '.$this->interpolate((string)$message, $context);
 
