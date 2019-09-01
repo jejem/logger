@@ -5,7 +5,6 @@
 	"keywords": ["log", "logger", "loglevel"],
 	"authors": [{"name": "Jérémy 'Jejem' Desvages", "email": "jejem@phyrexia.org"}],
 	"license": "MIT",
-	"version": "2.2.0",
 	"require": {
 		"php": ">=5.3",
 		"psr/log": "^1.0"
